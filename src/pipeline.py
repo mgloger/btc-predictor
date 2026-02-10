@@ -37,10 +37,12 @@ class BTCPredictionPipeline:
         print("⛓️ Collecting on-chain data...")
         onchain = {
             "active_addresses": self.onchain_collector.get_active_addresses(),
-            "exchange_netflow": self.onchain_collector.get_exchange_netflow(),
-            "mvrv": self.onchain_collector.get_mvrv_ratio(),
+            "transaction_count": self.onchain_collector.get_transaction_count(),
+            "transaction_volume": self.onchain_collector.get_transaction_volume(),
+            "miner_revenue": self.onchain_collector.get_miner_revenue(),
             "hash_rate": self.onchain_collector.get_hash_rate(),
-            "sopr": self.onchain_collector.get_sopr(),
+            "mempool_count": self.onchain_collector.get_mempool_count(),
+            "market_cap": self.onchain_collector.get_market_cap(),
         }
 
         print("🏦 Collecting macro data...")
