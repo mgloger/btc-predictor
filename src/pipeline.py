@@ -18,7 +18,7 @@ class BTCPredictionPipeline:
 
     def __init__(self):
         self.market_collector = MarketDataCollector(CONFIG)
-        self.onchain_collector = OnChainCollector(CONFIG)
+        self.onchain_collector = OnChainCollector()
         self.macro_collector = MacroDataCollector(CONFIG)
         self.sentiment_collector = SentimentCollector(CONFIG)
 
