@@ -10,7 +10,7 @@ CONFIG = {
     "BINANCE_SECRET": os.getenv("BINANCE_SECRET"),
 
     # On-Chain Data
-    "GLASSNODE_API_KEY": os.getenv("GLASSNODE_API_KEY"),
+    #"GLASSNODE_API_KEY": os.getenv("GLASSNODE_API_KEY"),
     "CRYPTOQUANT_API_KEY": os.getenv("CRYPTOQUANT_API_KEY"),
 
     # Macro Data
@@ -18,10 +18,10 @@ CONFIG = {
 
     # Sentiment / News
     "NEWS_API_KEY": os.getenv("NEWS_API_KEY"),
-    "TWITTER_BEARER_TOKEN": os.getenv("TWITTER_BEARER_TOKEN"),
+    #"TWITTER_BEARER_TOKEN": os.getenv("TWITTER_BEARER_TOKEN"),
 
     # ETF Flow Data
-    "SOSOVALUE_API_KEY": os.getenv("SOSOVALUE_API_KEY"),
+    #"SOSOVALUE_API_KEY": os.getenv("SOSOVALUE_API_KEY"),
 
     # Model Settings
     "LOOKBACK_DAYS": 90,
