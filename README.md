@@ -12,7 +12,8 @@ Data Sources → Data Pipeline → Feature Engineering → ML Models → Ensembl
 | Source | Provider | Signals |
 |--------|----------|---------|
 | Market Data | Binance (ccxt) | OHLCV, order book, funding rates |
-| On-Chain | Glassnode | MVRV, SOPR, exchange flows, hash rate, active addresses |
+| On-Chain | Mempool.space | Hash rate, difficulty, mempool stats | Free — no key needed |
+| On-Chain | Blockchair | Network stats, fees, mempool size | Free — no key needed |
 | Macro | FRED API | Fed Funds rate, CPI, DXY, M2 supply, S&P 500, 10Y Treasury |
 | Sentiment | NewsAPI + FinBERT | News sentiment scoring, Fear & Greed Index |
 
