@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import ta  # Technical Analysis library
+import ta
 
 
 class FeatureEngineer:
@@ -50,7 +50,7 @@ class FeatureEngineer:
         ]
         last_halving = max(d for d in halving_dates if d <= df.index.max())
         df["days_since_halving"] = (df.index - last_halving).days
-        df["halving_cycle_phase"] = df["days_since_halving"] / (4 * 365)  # Normalized 0-1
+        df["halving_cycle_phase"] = df["days_since_halving"] / (4 * 365)
         return df
 
     def add_log_returns(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -71,22 +71,44 @@ class FeatureEngineer:
         df = self.add_log_returns(df)
         df = self.add_cycle_features(df)
 
-        # Merge on-chain data (resampled to daily)
+        rows_before = len(df)
+
+        # ─── Merge on-chain data (left join + forward fill) ───
         for name, onchain_df in self.onchain.items():
-            onchain_daily = onchain_df.resample("1D").last().ffill()
-            onchain_daily.columns = [f"onchain_{name}"]
-            df = df.join(onchain_daily, how="left")
+            try:
+                onchain_daily = onchain_df.resample("1D").last().ffill()
+                onchain_daily.columns = [f"onchain_{name}"]
+                df = df.join(onchain_daily, how="left")
+            except Exception as e:
+                print(f"   ⚠️ Skipping on-chain '{name}': {e}")
 
-        # Merge macro data (forward-filled for missing days)
+        # ─── Merge macro data (left join + forward fill) ───
         for name, macro_df in self.macro.items():
-            macro_daily = macro_df.resample("1D").last().ffill()
-            macro_daily.columns = [f"macro_{name}"]
-            df = df.join(macro_daily, how="left")
+            try:
+                macro_daily = macro_df.resample("1D").last().ffill()
+                macro_daily.columns = [f"macro_{name}"]
+                df = df.join(macro_daily, how="left")
+            except Exception as e:
+                print(f"   ⚠️ Skipping macro '{name}': {e}")
 
-        # Add sentiment as a static feature (refreshed periodically)
+        # Add sentiment
         df["sentiment_score"] = self.sentiment
 
-        # Forward-fill and drop initial NaNs
-        df = df.ffill().dropna()
+        # ─── KEY FIX: Forward-fill then back-fill external data ───
+        # This prevents dropping rows just because on-chain/macro data
+        # doesn't cover the full date range of market data
+        df = df.ffill().bfill()
+
+        # Only drop rows where CORE market features are NaN
+        # (from technical indicators needing warmup like SMA-200)
+        core_cols = ["sma_50", "macd", "rsi_14", "volatility_30d"]
+        df = df.dropna(subset=core_cols)
+
+        rows_after = len(df)
+        print(f"📋 Feature matrix: {rows_after} rows retained "
+              f"(dropped {rows_before - rows_after} warmup rows)")
+        print(f"   Columns: {len(df.columns)}")
+        print(f"   Date range: {df.index.min()} → {df.index.max()}")
+        print(f"   NaN remaining: {df.isna().sum().sum()}")
 
         return df
